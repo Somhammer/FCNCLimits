@@ -3,23 +3,33 @@ import yaml
 import subprocess
 from ROOT import *
 
+cmssw_base = os.environ['CMSSW_BASE']
+
 parser = argparse.ArgumentParser(description='Set input root file')
-parser.add_argument('-i', '--input', action='store', dest='input', type=str, default='...')
-parser.add_argument('-x', '--xsecfile', action='store', dest='xsecfile', type=str, default='xsec_txt/files16.yml')
-parser.add_argument('-r', '--root_path', action='store', dest='root_path', type=str, default='hists/root16_post')
+parser.add_argument('-d', '--discriminant', action='store', dest='disc', type=str, default='dR_All')
+parser.add_argument('-h', '--histname', action='store', dest-'hist', type=str, default='test')
+parser.add_argument('-i', '--input', action='store', dest='input', type=str, default='test')
+parser.add_argument('-o', '--output', action='store', dest='output', type=str, default='test')
+parser.add_argument('-y', '--year', action='store', dest='year', type=str, defalut='16')
+parser.add_argument('-l', '--luminosity', action='store', dest='lumi', type=int default=35922)
 options = parser.parse_args()
 
-print "Usage: python saveFitResultAsText.py directory rootfile"
-cmd = ['python', 'saveFitResultAsText.py', 'datacard_2016/ttbb', 'multidimfit_ttbb_Discriminant_dR_All_postfit.root']
+if not os.path.exists(options.output):
+    os.makedirs(options.output)
+
+tmp = cmssw_base+'/src/UserCode/ttbbDiffXsec/saveFitResultAsText.py'
+
+cmd = ['python', tmp, os.getcwd(), 'multidimfit_ttbb_Discriminant_%s_postfit.root' % options.discriminant]
 with open('fitresult.txt','w') as f_out:
     subprocess.call(cmd, stdout=f_out)
-with open(options.xsecfile, 'r') as xsec_file:
+
+histPath = cmssw_base+'/src/UserCode/ttbbDiffXsec/hists/root%s_post' % options.year
+
+with open(cmssw_base+'/src/UserCode/ttbbDiffXsec/xsec_txt/files%s.yml' % options.year, 'r') as xsec_file:
     xsec_data = yaml.load(xsec_file)
 
 sigRates = []
-bkgRates = [
-#    {{'process':process, 'rate':rate},{'process':process, 'rate':rate}}
-    ]
+bkgRates = []
 
 with open('fitresult.txt','r') as f:
     flag = True
@@ -46,7 +56,6 @@ with open('fitresult.txt','r') as f:
         print sigRates
         print bkgRates
 
-
 mc_categories = ['ttbb', 'ttbj', 'ccLF', 'ttbkg', 'other', 'qcd']
 processes_mapping = {x:[] for x in mc_categories}
 processes_mapping['data_Ch0'] = ['hist_DataSingleMu.root']
@@ -58,7 +67,7 @@ processes_mapping.pop('data_Ch1')
 processes_mapping.pop('data_Ch2')
 processes_mapping['qcd'].append('hist_dataDriven_QCD.root')
 
-for item in os.listdir(options.root_path):
+for item in os.listdir(histPath):
     if not item in xsec_data: continue
     if any(i in item for i in ['QCD','Data']): continue
     category = xsec_data[item]['group'][1:]
@@ -68,42 +77,57 @@ for item in os.listdir(options.root_path):
         category = 'other'
     processes_mapping[category].append(item)
 
-histName = "h_mindR_RecoAddbJetDeltaR_Ch2_S3"
+histName = options.histname
 for process, paths in processes_mapping.items():
     if 'data' in process:
-        f_mu = TFile.Open(os.path.join(options.root_path,'hist_DataSingleMu.root'))
-        f_el = TFile.Open(os.path.join(options.root_path,'hist_DataSingleEG.root'))
-        TH1 = f_mu.Get('h_mindR_RecoAddbJetDeltaR_Ch0_S3')
-        TH1.Add(f_el.Get('h_mindR_RecoAddbJetDeltaR_Ch1_S3'))
+        f_mu = TFile.Open(os.path.join(histPath,'hist_DataSingleMu.root'))
+        f_el = TFile.Open(os.path.join(histPath,'hist_DataSingleEG.root'))
+        muon = histName.replace('Ch2','Ch0')
+        TH1 = f_mu.Get(histName.replace('Ch2','Ch0'))
+        TH1.Add(f_el.Get(histName.replace('Ch2','Ch1')))
         TH1.SetName(histName)
-        f_out = TFile.Open('./test/hist_data_obs.root','recreate')
+        f_out = TFile.Open(options.output+'/hist_data_obs.root','recreate')
         f_out.cd()
         TH1.Write()
     elif 'qcd' in process:
-        f_in = TFile.Open(os.path.join(options.root_path,path))
+        f_in = TFile.Open(os.path.join(histPath,path))
         TH1 = f_in.Get(histName)
-        f_out = TFile.Open('./test/'+path, 'recreate')
+        f_out = TFile.Open(options.output+'/'+path, 'recreate')
         f_out.cd()
         TH1.Write()
     else:
         for path in paths:
-            f_in = TFile.Open(os.path.join(options.root_path,path))
+            f_in = TFile.Open(os.path.join(histPath,path))
             TH1 = f_in.Get(histName)
+            
+            f_out = TFile.Open(options.output+'/'+path,'recreate')
+            f_out.cd()
+
             xsec = xsec_data[path]['cross-section']
             nevt = xsec_data[path]['generated-events']
             #TH1.Scale(35922.0*xsec/float(nevt))
             if 'ttbb' in process:
-                TH2 = f_in.Get("h_mindR_ResponseMatrixDeltaR_Ch2_S3") 
+                TH2 = f_in.Get(histName.replace('RecoAddbJet','ResponseMatrix')) 
+                TH2.Scale(1/TH2.Integral())
                 for ibin in range(1, TH2.GetNbinsX()+1):
                     value = 0.0
+                    total = 0.0
+                    for i in range(len(sigRates)):
+                        total += sigRates[i][0]
                     for jbin in range(1, TH2.GetNbinsY()+1):
-                        value += sigRates[jbin-1][0]*TH2.GetBinContent(ibin,jbin)
+                        value += total*TH2.GetBinContent(ibin,jbin)
+                        #value += sigRates[jbin-1][0]*TH2.GetBinContent(ibin,jbin)
                     TH1.SetBinContent(ibin, value)
                     #TH1.SetBinError(ibin, error)
+                TH1Gen = f_in.Get(histName.replace('Reco','Gen'))
+                TH1Gen.Scale(options.lumi*xsec/float(nevt))
+                for ibin in range(1, TH1Gen.GetNbinsX()+1):
+                    TH1Gen.SetBinContent(ibin, sigRates[ibin-1][0])
+                    TH1Gen.SetBinError(ibin, sigRates[ibin-1][1])
+                f_out.cd()
+                TH1Gen.Write()
             else:
                 for i in range(TH1.GetNbinsX()):
                     TH1.SetBinContent(i+1, TH1.GetBinContent(i+1)*bkgRates[i][process][0])
-                    #TH1.SetBinError(i+1, TH1.GetBinError(i+1)*bkgRates[i][process][1])
-            f_out = TFile.Open('./test/'+path,'recreate')
-            f_out.cd()
+                    TH1.SetBinError(i+1, TH1.GetBinError(i+1)*bkgRates[i][process][0])
             TH1.Write()
