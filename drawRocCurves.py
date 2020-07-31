@@ -1,10 +1,14 @@
 from rocCurveFacility import *
-import os
+import os, sys
 import ROOT
 
 # Script to draw 2016 and 2017 rocCurves on same graph (easy to modifiy for ther purposes)
-pathToTh1_2016 = "datacards_190702_2016_norebin"
-pathToTh1_2017 = "datacards_190702_2017_norebin"
+pathToTh1_2016 = "datacards_200101_2016v16"
+pathToTh1_2017 = "datacards_200101_2017v34"
+pathToTh1_2018 = "datacards_200101_2018v34"
+output_postfix = ''
+
+if sys.argv[1]: output_postfix = sys.argv[1]
 
 ROOT.gROOT.SetBatch(ROOT.kTRUE)
 
@@ -30,7 +34,7 @@ def getRocCurve(partial_name, th1_rootFileName, coupling):
 
 
 
-rocCurveOutputFolder = 'rocCurves_' + pathToTh1_2016
+rocCurveOutputFolder = 'rocCurves_' + pathToTh1_2016.split('_')[1] + ('_') + pathToTh1_2017.split('_')[1] + ('_') + pathToTh1_2018.split('_')[1] + output_postfix
 
 if not os.path.exists(rocCurveOutputFolder):
     os.mkdir(rocCurveOutputFolder)
@@ -40,7 +44,7 @@ jetBins = ['b2j3', 'b3j3', 'b2j4', 'b3j4', 'b4j4']
 
 for coupling in couplings:
     for jetBin in jetBins:
-        title = "RocCurve_2016_vs_2017_" + coupling  + "_" + jetBin
+        title = "RocCurves_" + coupling  + "_" + jetBin
         canvas = ROOT.TCanvas(title, title)
         canvas.SetGrid()
 
@@ -65,11 +69,20 @@ for coupling in couplings:
         #rocCurve_2017.SetMarkerStyle(2)
         rocCurve_2017.Draw("same")
 
+        th1_rootFileName_2018 = os.path.join(pathToTh1_2018, 'shapes_' + partial_name + '.root')
+        rocCurve_2018 = getRocCurve(partial_name, th1_rootFileName_2018, coupling)
+        rocCurve_2018.SetMarkerColor(8)
+        rocCurve_2018.SetLineColor(8)
+        rocCurve_2018.SetLineWidth(2)
+        #rocCurve_2018.SetMarkerStyle(2)
+        rocCurve_2018.Draw("same")
+
         
 
         legend = ROOT.TLegend(0.1, 0.7, 0.3, 0.9)
         legend.AddEntry(rocCurve_2016, "2016", "l")
         legend.AddEntry(rocCurve_2017, "2017", "l")
+        legend.AddEntry(rocCurve_2018, "2018", "l")
         legend.Draw("")
 
         canvas.Print(os.path.join(rocCurveOutputFolder, title + ".png"))

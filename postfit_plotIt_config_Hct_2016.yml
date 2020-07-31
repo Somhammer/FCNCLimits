@@ -1,0 +1,39 @@
+configuration:
+  width: 450
+  height: 450
+  luminosity-label: '35.9 fb^{-1} at #sqrt{s} = 13 TeV'
+  experiment: " CMS"
+  #extra-label: "Preliminary"
+  extra-label: "Work in Progress"
+  root: 'postfit_shapes_FCNC_Hct_Discriminant_DNN_Hct_all_forPlotIt/'
+  #root: ROOTFILEDIR
+  luminosity: 1
+  luminosity-error: 0
+  error-fill-style: 3154
+  error-fill-color: "#ee556270"
+  ratio-fit-error-fill-style: 1001
+  ratio-fit-error-fill-color: "#aa556270"
+  ratio-fit-line-color: "#0B486B"
+  blinded-range-fill-color: "#29556270"
+  blinded-range-fill-style: 1001
+  yields-table-align: v
+  book-keeping-file: 'plots.root'
+  yields-table-numerical-precision-yields: 2
+
+files:
+  include: ['postfit_file_Hct.yml']
+
+groups:
+  include: ['postfit_group.yml']
+
+systematics:
+    - postfit
+
+
+plots:
+  include: ['histos_postfit_Hct_all.yml']
+
+legend:
+  position: [0.18, 0.72, 0.88, 0.86]
+#  position: [0.18, 0.73, 0.92, 0.89] #For DNN
+  columns: 4

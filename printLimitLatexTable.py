@@ -1,7 +1,7 @@
 import json, sys, os
 
 limitfolder = sys.argv[1]
-removeHutb4j4 = True
+removeHutb4j4 = False
 if len(sys.argv) > 2:
   removeHutb4j4 = not (sys.argv[2] == "False")
 
@@ -29,15 +29,15 @@ if removeHutb4j4:
       \hline
       Category & $\sigma_{{exp}} - 2\sigma$ & $\sigma_{{exp}} - 1\sigma$ & $\sigma_{{exp}}$ & $\sigma_{{obs}}$ & $\sigma_{{exp}} + 1\sigma$ & $\sigma_{{exp}} + 2\sigma$ \\\\ \hline
       $b2j3$ & {j3b2M2sig} & {j3b2M1sig} & {j3b2Exp} & {j3b2Obs} & {j3b2P1sig} & {j3b2P2sig} \\\\
-      $b3j3$ & {j3b3M2sig} & {j3b3M1sig} & {j3b3Exp} & {j3b3Obs} & {j3b3P1sig} & {j3b3P2sig} \\\\
       $b2j4$ & {j4b2M2sig} & {j4b2M1sig} & {j4b2Exp} & {j4b2Obs} & {j4b2P1sig} & {j4b2P2sig} \\\\
+      $b3j3$ & {j3b3M2sig} & {j3b3M1sig} & {j3b3Exp} & {j3b3Obs} & {j3b3P1sig} & {j3b3P2sig} \\\\
       $b3j4$ & {j4b3M2sig} & {j4b3M1sig} & {j4b3Exp} & {j4b3Obs} & {j4b3P1sig} & {j4b3P2sig} \\\\
       all & {allM2sig} & {allM1sig} & {allExp} & {allObs} & {allP1sig} & {allP2sig} \\\\ \hline
    \end{{tabular}}
 """.format(
         j3b2M2sig=Hut_limits['b2j3']['two_sigma'][0], j3b2M1sig=Hut_limits['b2j3']['one_sigma'][0], j3b2Exp=Hut_limits['b2j3']['expected'], j3b2Obs=Hut_limits['b2j3']['observed'], j3b2P1sig=Hut_limits['b2j3']['one_sigma'][1], j3b2P2sig=Hut_limits['b2j3']['two_sigma'][1], 
-        j3b3M2sig=Hut_limits['b3j3']['two_sigma'][0], j3b3M1sig=Hut_limits['b3j3']['one_sigma'][0], j3b3Exp=Hut_limits['b3j3']['expected'], j3b3Obs=Hut_limits['b3j3']['observed'], j3b3P1sig=Hut_limits['b3j3']['one_sigma'][1], j3b3P2sig=Hut_limits['b3j3']['two_sigma'][1], 
         j4b2M2sig=Hut_limits['b2j4']['two_sigma'][0], j4b2M1sig=Hut_limits['b2j4']['one_sigma'][0], j4b2Exp=Hut_limits['b2j4']['expected'], j4b2Obs=Hut_limits['b2j4']['observed'], j4b2P1sig=Hut_limits['b2j4']['one_sigma'][1], j4b2P2sig=Hut_limits['b2j4']['two_sigma'][1], 
+        j3b3M2sig=Hut_limits['b3j3']['two_sigma'][0], j3b3M1sig=Hut_limits['b3j3']['one_sigma'][0], j3b3Exp=Hut_limits['b3j3']['expected'], j3b3Obs=Hut_limits['b3j3']['observed'], j3b3P1sig=Hut_limits['b3j3']['one_sigma'][1], j3b3P2sig=Hut_limits['b3j3']['two_sigma'][1], 
         j4b3M2sig=Hut_limits['b3j4']['two_sigma'][0], j4b3M1sig=Hut_limits['b3j4']['one_sigma'][0], j4b3Exp=Hut_limits['b3j4']['expected'], j4b3Obs=Hut_limits['b3j4']['observed'], j4b3P1sig=Hut_limits['b3j4']['one_sigma'][1], j4b3P2sig=Hut_limits['b3j4']['two_sigma'][1],
         #j4b4M2sig=Hut_limits['b4j4']['two_sigma'][0], j4b4M1sig=Hut_limits['b4j4']['one_sigma'][0], j4b4Exp=Hut_limits['b4j4']['expected'], j4b4Obs=Hut_limits['b4j4']['observed'], j4b4P1sig=Hut_limits['b4j4']['one_sigma'][1], j4b4P2sig=Hut_limits['b4j4']['two_sigma'][1],
         allM2sig=Hut_limits['all']['two_sigma'][0], allM1sig=Hut_limits['all']['one_sigma'][0], allExp=Hut_limits['all']['expected'], allObs=Hut_limits['all']['observed'], allP1sig=Hut_limits['all']['one_sigma'][1], allP2sig=Hut_limits['all']['two_sigma'][1], 
@@ -48,16 +48,16 @@ else:
       \hline
       Category & $\sigma_{{exp}} - 2\sigma$ & $\sigma_{{exp}} - 1\sigma$ & $\sigma_{{exp}}$ & $\sigma_{{obs}}$ & $\sigma_{{exp}} + 1\sigma$ & $\sigma_{{exp}} + 2\sigma$ \\\\ \hline
       $b2j3$ & {j3b2M2sig} & {j3b2M1sig} & {j3b2Exp} & {j3b2Obs} & {j3b2P1sig} & {j3b2P2sig} \\\\
-      $b3j3$ & {j3b3M2sig} & {j3b3M1sig} & {j3b3Exp} & {j3b3Obs} & {j3b3P1sig} & {j3b3P2sig} \\\\
       $b2j4$ & {j4b2M2sig} & {j4b2M1sig} & {j4b2Exp} & {j4b2Obs} & {j4b2P1sig} & {j4b2P2sig} \\\\
+      $b3j3$ & {j3b3M2sig} & {j3b3M1sig} & {j3b3Exp} & {j3b3Obs} & {j3b3P1sig} & {j3b3P2sig} \\\\
       $b3j4$ & {j4b3M2sig} & {j4b3M1sig} & {j4b3Exp} & {j4b3Obs} & {j4b3P1sig} & {j4b3P2sig} \\\\
       $b4j4$ & {j4b4M2sig} & {j4b4M1sig} & {j4b4Exp} & {j4b4Obs} & {j4b4P1sig} & {j4b4P2sig} \\\\ \hline
       all & {allM2sig} & {allM1sig} & {allExp} & {allObs} & {allP1sig} & {allP2sig} \\\\ \hline
    \end{{tabular}}
 """.format(
         j3b2M2sig=Hut_limits['b2j3']['two_sigma'][0], j3b2M1sig=Hut_limits['b2j3']['one_sigma'][0], j3b2Exp=Hut_limits['b2j3']['expected'], j3b2Obs=Hut_limits['b2j3']['observed'], j3b2P1sig=Hut_limits['b2j3']['one_sigma'][1], j3b2P2sig=Hut_limits['b2j3']['two_sigma'][1],
-        j3b3M2sig=Hut_limits['b3j3']['two_sigma'][0], j3b3M1sig=Hut_limits['b3j3']['one_sigma'][0], j3b3Exp=Hut_limits['b3j3']['expected'], j3b3Obs=Hut_limits['b3j3']['observed'], j3b3P1sig=Hut_limits['b3j3']['one_sigma'][1], j3b3P2sig=Hut_limits['b3j3']['two_sigma'][1],
         j4b2M2sig=Hut_limits['b2j4']['two_sigma'][0], j4b2M1sig=Hut_limits['b2j4']['one_sigma'][0], j4b2Exp=Hut_limits['b2j4']['expected'], j4b2Obs=Hut_limits['b2j4']['observed'], j4b2P1sig=Hut_limits['b2j4']['one_sigma'][1], j4b2P2sig=Hut_limits['b2j4']['two_sigma'][1],
+        j3b3M2sig=Hut_limits['b3j3']['two_sigma'][0], j3b3M1sig=Hut_limits['b3j3']['one_sigma'][0], j3b3Exp=Hut_limits['b3j3']['expected'], j3b3Obs=Hut_limits['b3j3']['observed'], j3b3P1sig=Hut_limits['b3j3']['one_sigma'][1], j3b3P2sig=Hut_limits['b3j3']['two_sigma'][1],
         j4b3M2sig=Hut_limits['b3j4']['two_sigma'][0], j4b3M1sig=Hut_limits['b3j4']['one_sigma'][0], j4b3Exp=Hut_limits['b3j4']['expected'], j4b3Obs=Hut_limits['b3j4']['observed'], j4b3P1sig=Hut_limits['b3j4']['one_sigma'][1], j4b3P2sig=Hut_limits['b3j4']['two_sigma'][1],
         j4b4M2sig=Hut_limits['b4j4']['two_sigma'][0], j4b4M1sig=Hut_limits['b4j4']['one_sigma'][0], j4b4Exp=Hut_limits['b4j4']['expected'], j4b4Obs=Hut_limits['b4j4']['observed'], j4b4P1sig=Hut_limits['b4j4']['one_sigma'][1], j4b4P2sig=Hut_limits['b4j4']['two_sigma'][1],
         allM2sig=Hut_limits['all']['two_sigma'][0], allM1sig=Hut_limits['all']['one_sigma'][0], allExp=Hut_limits['all']['expected'], allObs=Hut_limits['all']['observed'], allP1sig=Hut_limits['all']['one_sigma'][1], allP2sig=Hut_limits['all']['two_sigma'][1],
@@ -84,16 +84,16 @@ Hct_table = """
       \hline
       Category & $\sigma_{{exp}} - 2\sigma$ & $\sigma_{{exp}} - 1\sigma$ & $\sigma_{{exp}}$ & $\sigma_{{obs}}$ & $\sigma_{{exp}} + 1\sigma$ & $\sigma_{{exp}} + 2\sigma$ \\\\ \hline
       $b2j3$ & {j3b2M2sig} & {j3b2M1sig} & {j3b2Exp} & {j3b2Obs} & {j3b2P1sig} & {j3b2P2sig} \\\\
-      $b3j3$ & {j3b3M2sig} & {j3b3M1sig} & {j3b3Exp} & {j3b3Obs} & {j3b3P1sig} & {j3b3P2sig} \\\\
       $b2j4$ & {j4b2M2sig} & {j4b2M1sig} & {j4b2Exp} & {j4b2Obs} & {j4b2P1sig} & {j4b2P2sig} \\\\
+      $b3j3$ & {j3b3M2sig} & {j3b3M1sig} & {j3b3Exp} & {j3b3Obs} & {j3b3P1sig} & {j3b3P2sig} \\\\
       $b3j4$ & {j4b3M2sig} & {j4b3M1sig} & {j4b3Exp} & {j4b3Obs} & {j4b3P1sig} & {j4b3P2sig} \\\\
       $b4j4$ & {j4b4M2sig} & {j4b4M1sig} & {j4b4Exp} & {j4b4Obs} & {j4b4P1sig} & {j4b4P2sig} \\\\ \hline
       all & {allM2sig} & {allM1sig} & {allExp} & {allObs} & {allP1sig} & {allP2sig} \\\\ \hline
    \end{{tabular}}
 """.format(
         j3b2M2sig=Hct_limits['b2j3']['two_sigma'][0], j3b2M1sig=Hct_limits['b2j3']['one_sigma'][0], j3b2Exp=Hct_limits['b2j3']['expected'], j3b2Obs=Hct_limits['b2j3']['observed'], j3b2P1sig=Hct_limits['b2j3']['one_sigma'][1], j3b2P2sig=Hct_limits['b2j3']['two_sigma'][1], 
-        j3b3M2sig=Hct_limits['b3j3']['two_sigma'][0], j3b3M1sig=Hct_limits['b3j3']['one_sigma'][0], j3b3Exp=Hct_limits['b3j3']['expected'], j3b3Obs=Hct_limits['b3j3']['observed'], j3b3P1sig=Hct_limits['b3j3']['one_sigma'][1], j3b3P2sig=Hct_limits['b3j3']['two_sigma'][1], 
         j4b2M2sig=Hct_limits['b2j4']['two_sigma'][0], j4b2M1sig=Hct_limits['b2j4']['one_sigma'][0], j4b2Exp=Hct_limits['b2j4']['expected'], j4b2Obs=Hct_limits['b2j4']['observed'], j4b2P1sig=Hct_limits['b2j4']['one_sigma'][1], j4b2P2sig=Hct_limits['b2j4']['two_sigma'][1], 
+        j3b3M2sig=Hct_limits['b3j3']['two_sigma'][0], j3b3M1sig=Hct_limits['b3j3']['one_sigma'][0], j3b3Exp=Hct_limits['b3j3']['expected'], j3b3Obs=Hct_limits['b3j3']['observed'], j3b3P1sig=Hct_limits['b3j3']['one_sigma'][1], j3b3P2sig=Hct_limits['b3j3']['two_sigma'][1], 
         j4b3M2sig=Hct_limits['b3j4']['two_sigma'][0], j4b3M1sig=Hct_limits['b3j4']['one_sigma'][0], j4b3Exp=Hct_limits['b3j4']['expected'], j4b3Obs=Hct_limits['b3j4']['observed'], j4b3P1sig=Hct_limits['b3j4']['one_sigma'][1], j4b3P2sig=Hct_limits['b3j4']['two_sigma'][1], 
         j4b4M2sig=Hct_limits['b4j4']['two_sigma'][0], j4b4M1sig=Hct_limits['b4j4']['one_sigma'][0], j4b4Exp=Hct_limits['b4j4']['expected'], j4b4Obs=Hct_limits['b4j4']['observed'], j4b4P1sig=Hct_limits['b4j4']['one_sigma'][1], j4b4P2sig=Hct_limits['b4j4']['two_sigma'][1],
         allM2sig=Hct_limits['all']['two_sigma'][0], allM1sig=Hct_limits['all']['one_sigma'][0], allExp=Hct_limits['all']['expected'], allObs=Hct_limits['all']['observed'], allP1sig=Hct_limits['all']['one_sigma'][1], allP2sig=Hct_limits['all']['two_sigma'][1], 

@@ -1,17 +1,17 @@
-'DNN_Hct_b2j3':
-  y-axis: "Entries"
-  y-axis-format: "%1% / %2$.2f"
-  save-extensions: ['pdf', 'png']
-  for-yields: true
-  yields-table-order: 0
-  yields-title: '$b2j3$'
-  x-axis: 'BDT Score'
-  ratio-y-axis-range: [0.8, 1.2]
-  labels:
-      - position: [0.778, 0.8]
-        text: 'b2j3'
-        size: 18
-#  signal-normalize-data: false
+#'DNN_Hct_b2j3':
+#  y-axis: "Entries"
+#  y-axis-format: "%1% / %2$.2f"
+#  save-extensions: ['pdf', 'png']
+#  for-yields: true
+#  yields-table-order: 0
+#  yields-title: '$b2j3$'
+#  x-axis: 'BDT Score'
+#  ratio-y-axis-range: [0.8, 1.2]
+#  labels:
+#      - position: [0.778, 0.8]
+#        text: 'b2j3'
+#        size: 18
+##  signal-normalize-data: false
 'DNN_Hct_b3j3':
   y-axis: "Entries"
   y-axis-format: "%1% / %2$.2f"

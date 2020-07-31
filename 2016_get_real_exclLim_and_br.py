@@ -3,6 +3,7 @@ import sys
 # From 2016 paper, Hct limit on Xsec is ~ 1.15pb (utilisant le plot et une latte) on BR 0.44%
 
 out_of_the_box_limits_from_combine = {'Hut':0.3105, 'Hct':0.4355}
+#out_of_the_box_limits_from_combine = {'Hut':0.4622, 'Hct':0.4690} #expected
 Xsec_2016 = {'Hut': 50.82, 'Hct': 38.88}
 for coupling in out_of_the_box_limits_from_combine.keys():
     print coupling

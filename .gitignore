@@ -102,3 +102,11 @@ venv.bak/
 
 # mypy
 .mypy_cache/
+
+# folders
+systematics_plots_*
+histos_suitable_for_limits_*
+fullComb_*
+datacards_*
+rocCurves_*
+old

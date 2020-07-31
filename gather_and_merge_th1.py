@@ -3,8 +3,8 @@ import os, re
 
 base_dir = '/home2/minerva1993/HEPToolsFCNC/finalMVA/histos/2017/'
 #base_dir = '/home2/minerva1993/HEPToolsFCNC/finalMVA/histos/2018/'
-base_output_dir = 'histos_suitable_for_limits_200101v34_2017/'
-#base_output_dir = 'histos_suitable_for_limits_200101v34_2018/'
+base_output_dir = 'histos_suitable_for_limits_200101v15_2017/'
+#base_output_dir = 'histos_suitable_for_limits_200101v2_2018/'
 
 if not os.path.isdir(base_output_dir):
     os.mkdir(base_output_dir)
@@ -47,9 +47,18 @@ for training_string in training_strings:
             median_dist = {}
             for th1_key in rootfile.GetListOfKeys():
                 th1_name = th1_key.GetName()
+                if not 'j3b2' in th1_name: continue
                 if not 'DNN' in th1_name: continue
                 if '__' in th1_name: continue
                 th1 = rootfile.Get(th1_name)
+                th1a = rootfile.Get(th1_name.replace('j3b2','j3b3'))
+                th1b = rootfile.Get(th1_name.replace('j3b2','j4b2'))
+                th1c = rootfile.Get(th1_name.replace('j3b2','j4b3'))
+                th1d = rootfile.Get(th1_name.replace('j3b2','j4b4'))
+                th1.Add(th1a,1.0)
+                th1.Add(th1b,1.0)
+                th1.Add(th1c,1.0)
+                th1.Add(th1d,1.0)
                 #new_th1_name = coupling_string + '_' + jet_string + '_' + th1_name
                 new_th1_name = coupling_string + '_' + th1_name
                 th1.SetName(new_th1_name)
@@ -70,9 +79,17 @@ for training_string in training_strings:
 
             for th1_key in rootfile.GetListOfKeys():
                 th1_name = th1_key.GetName()
-                if not 'DNN' in th1_name:
-                    continue
+                if not 'j3b2' in th1_name: continue
+                if not 'DNN' in th1_name: continue
                 th1 = rootfile.Get(th1_name)
+                th1a = rootfile.Get(th1_name.replace('j3b2','j3b3'))
+                th1b = rootfile.Get(th1_name.replace('j3b2','j4b2'))
+                th1c = rootfile.Get(th1_name.replace('j3b2','j4b3'))
+                th1d = rootfile.Get(th1_name.replace('j3b2','j4b4'))
+                th1.Add(th1a,1.0)
+                th1.Add(th1b,1.0)
+                th1.Add(th1c,1.0)
+                th1.Add(th1d,1.0)
                 #new_th1_name = coupling_string + '_' + jet_string + '_' + th1_name
                 new_th1_name = coupling_string + '_' + th1_name
                 th1.SetName(new_th1_name)
@@ -108,9 +125,17 @@ for training_string in training_strings:
                     output_rootfile.cd()
                     for th1_key in rootfile.GetListOfKeys():
                         th1_name = th1_key.GetName()
-                        if not 'DNN' in th1_name:
-                            continue
+                        if not 'j3b2' in th1_name: continue
+                        if not 'DNN' in th1_name: continue
                         th1 = rootfile.Get(th1_name)
+                        th1a = rootfile.Get(th1_name.replace('j3b2','j3b3'))
+                        th1b = rootfile.Get(th1_name.replace('j3b2','j4b2'))
+                        th1c = rootfile.Get(th1_name.replace('j3b2','j4b3'))
+                        th1d = rootfile.Get(th1_name.replace('j3b2','j4b4'))
+                        th1.Add(th1a,1.0)
+                        th1.Add(th1b,1.0)
+                        th1.Add(th1c,1.0)
+                        th1.Add(th1d,1.0)
                         #new_th1_name = coupling_string + '_' + jet_string + '_' + th1_name + '__' + syst + var
                         new_th1_name = coupling_string + '_' + th1_name + '__' + syst + var
                         th1.SetName(new_th1_name)

@@ -48,7 +48,8 @@ print "Detected channels: ", channels
 
 processs = set()
 
-for proc in file.Get('%s_prefit' % channels[0]).GetListOfKeys():
+#for proc in file.Get('%s_prefit' % channels[0]).GetListOfKeys():
+for proc in file.Get('%sb2j3_prefit' % channels[0][:-4]).GetListOfKeys():
     processs.add(proc.GetName())
 
 print 'Detected processes: ', processs
@@ -68,25 +69,29 @@ for process in processs:
     output_filename = "%s_postfit_histos.root" % (process)
     plot_file = TFile.Open(os.path.join(output_dir, output_filename), 'recreate')
     for channel in channels:
-        print "    Channel : ", channel
+#        print "    Channel : ", channel
         # Nominal post-fit shape
         nominal_postfit = file.Get('%s_postfit/%s' % (channel, process))
-        nominal_postfit.SetName(channel)
-        nominal_postfit.Write()
+        try:
+            nominal_postfit.SetName(channel)
+            nominal_postfit.Write()
+            print "    Channel : ", channel
 
-        if process != 'data_obs':# and not process.startswith('Hct') and not process.startswith('Hut'):
-            nominal_postfit_up = nominal_postfit.Clone()
-            nominal_postfit_up.SetName(channel + '__postfitup')
-            shift_hist(nominal_postfit_up, 1)
+            if process != 'data_obs':# and not process.startswith('Hct') and not process.startswith('Hut'):
+                nominal_postfit_up = nominal_postfit.Clone()
+                nominal_postfit_up.SetName(channel + '__postfitup')
+                shift_hist(nominal_postfit_up, 1)
 
-            nominal_postfit_down = nominal_postfit.Clone()
-            nominal_postfit_down.SetName(channel + '__postfitdown')
-            shift_hist(nominal_postfit_down, -1)
+                nominal_postfit_down = nominal_postfit.Clone()
+                nominal_postfit_down.SetName(channel + '__postfitdown')
+                shift_hist(nominal_postfit_down, -1)
 
-            remove_errors(nominal_postfit)
+                remove_errors(nominal_postfit)
 
-            nominal_postfit_up.Write()
-            nominal_postfit_down.Write()
+                nominal_postfit_up.Write()
+                nominal_postfit_down.Write()
+
+        except: pass
 
     plot_file.Close()
 

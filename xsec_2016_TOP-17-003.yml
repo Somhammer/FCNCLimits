@@ -1,0 +1,105 @@
+'sig_stop_Hct.root':
+  type: signal
+  pretty-name: 'sig_stop_Hct'
+  cross-section: 0.0488
+  generated-events: 1
+  line-color: '#006666'
+  legend: 'STHct'
+  order: 1
+
+#'hist_TTTH1L3BHct.root':
+#  type: signal
+#  pretty-name: 'TTTH1L3BHct'
+#  cross-section: 1.86
+#  generated-events: 1585684
+#  line-color: '#0000cc'
+#  legend: 'TTHct'
+#  order: 2
+
+'sig_ttbar_Hct.root':
+  type: signal
+  pretty-name: 'sig_ttbar_Hct'
+  cross-section: 0.951
+  generated-events: 1
+  line-color: '#0000cc'
+  legend: 'TTHct'
+  order: 2
+
+###########################
+
+'sig_stop_Hut.root':
+  type: signal
+  pretty-name: 'sig_stop_Hut'
+  cross-section: 0.272
+  generated-events: 1
+  line-color: '#666600'
+  legend: 'STHut'
+  order: 3
+
+#'hist_TTTH1L3BHut.root':
+#  type: signal
+#  pretty-name: 'TTTH1L3BHut'
+#  cross-section: 1.86
+#  generated-events: 1569372
+#  line-color: '#cccc00'
+#  legend: 'TTHut'
+#  order: 4
+
+'sig_ttbar_Hut.root':
+  type: signal
+  pretty-name: 'sig_ttbar_Hut'
+  cross-section: 0.728
+  generated-events: 1
+  line-color: '#cccc00'
+  legend: 'TTHut'
+  order: 4
+
+'data_obs.root':
+  type: data
+  legend: 'Data'
+  pretty-name: 'Data'
+  group: GData
+
+'ttbb.root':
+  type: mc
+  pretty-name: 'ttbb'
+  cross-section: 1
+  generated-events: 1
+  fill-color: "#330000"
+  legend: "ttbb"
+  group: Gttbb
+  yields-group: '0\ttbar\bbbar'
+  order: 0
+
+'ttcc.root':
+  type: mc
+  pretty-name: 'ttcc'
+  cross-section: 1
+  generated-events: 1
+  fill-color: '#990000'
+  legend: 'ttcc'
+  group: Gttcc
+  yields-group: '2\ttbar\ccbar'
+  order: 3
+
+'ttlf.root':
+  type: mc
+  pretty-name: 'ttlf'
+  cross-section: 1
+  generated-events: 1
+  fill-color: '#cc0000'
+  legend: 'ttLF'
+  group: Gttlf
+  yields-group: '2\ttbar LF'
+  order: 6
+
+'other.root':
+  type: mc
+  pretty-name: 'other'
+  cross-section: 1
+  generated-events: 1
+  fill-color: '#cc0000'
+  legend: 'ttLF'
+  group: Gttlf
+  yields-group: '2\ttbar LF'
+  order: 6

@@ -1,0 +1,71 @@
+'DNN_Hct_b2j3':
+  y-axis: "Entries"
+  y-axis-format: "%1% / %2$.2f"
+  save-extensions: ['pdf', 'png']
+  for-yields: true
+  yields-table-order: 0
+  yields-title: '$b2j3$'
+  x-axis: 'BDT Score'
+  ratio-y-axis-range: [0.8, 1.2]
+  labels:
+      - position: [0.778, 0.8]
+        text: 'b2j3'
+        size: 18
+##  signal-normalize-data: false
+#'DNN_Hct_b3j3':
+#  y-axis: "Entries"
+#  y-axis-format: "%1% / %2$.2f"
+#  save-extensions: ['pdf', 'png']
+#  for-yields: true
+#  yields-table-order: 1
+#  yields-title: '$b3j3$'
+#  x-axis: 'BDT Score'
+#  ratio-y-axis-range: [0.8, 1.2]
+#  labels:
+#      - position: [0.778, 0.8]
+#        text: 'b3j3'
+#        size: 18
+##  signal-normalize-data: false
+#
+#'DNN_Hct_b2j4':
+#  y-axis: "Entries"
+#  y-axis-format: "%1% / %2$.2f"
+#  save-extensions: ['pdf', 'png']
+#  for-yields: true
+#  yields-table-order: 2
+#  yields-title: '$b2j4$'
+#  x-axis: 'BDT Score'
+#  ratio-y-axis-range: [0.8, 1.2]
+#  labels:
+#      - position: [0.778, 0.8]
+#        text: 'b2j4'
+#        size: 18
+##  signal-normalize-data: false
+#'DNN_Hct_b3j4':
+#  y-axis: "Entries"
+#  y-axis-format: "%1% / %2$.2f"
+#  save-extensions: ['pdf', 'png']
+#  for-yields: true
+#  yields-table-order: 3
+#  yields-title: '$b3j4$'
+#  x-axis: 'BDT Score'
+#  ratio-y-axis-range: [0.8, 1.2]
+#  labels:
+#      - position: [0.778, 0.8]
+#        text: 'b3j4'
+#        size: 18
+##  signal-normalize-data: false
+#'DNN_Hct_b4j4':
+#  y-axis: "Entries"
+#  y-axis-format: "%1% / %2$.2f"
+#  save-extensions: ['pdf', 'png']
+#  for-yields: true
+#  yields-table-order: 4
+#  yields-title: '$b4j4$'
+#  x-axis: 'BDT Score'
+#  ratio-y-axis-range: [0.8, 1.2]
+#  labels:
+#      - position: [0.778, 0.8]
+#        text: 'b4j4'
+#        size: 18
+##  signal-normalize-data: false

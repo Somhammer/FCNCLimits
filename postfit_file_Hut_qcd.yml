@@ -1,0 +1,52 @@
+'data_obs_postfit_histos.root':
+  type: data
+  pretty-name: 'Data'
+  group: GData
+
+'Hut_postfit_histos.root':
+  type: signal
+  pretty-name: 'Hut'
+  cross-section: 1
+  generated-events: 1
+  group: GHut
+  order: 3
+
+'ttbb_postfit_histos.root':
+  type: mc
+  pretty-name: 'TTpowhegttbb'
+  cross-section: 1
+  generated-events: 1
+  group: Gttbb
+  order: 1
+
+'ttcc_postfit_histos.root':
+  type: mc
+  pretty-name: 'TTpowhegttcc'
+  cross-section: 1
+  generated-events: 1
+  group: Gttcc
+  order: 2
+
+'ttlf_postfit_histos.root':
+  type: mc
+  pretty-name: 'TTpowhegttlf'
+  cross-section: 1
+  generated-events: 1
+  group: Gttlf
+  order: 3
+
+'other_postfit_histos.root':
+  type: mc
+  pretty-name: 'Other'
+  cross-section: 1
+  generated-events: 1
+  group: Gother
+  order: 4
+
+'qcd_postfit_histos.root':
+  type: mc
+  pretty-name: 'QCD'
+  cross-section: 1
+  generated-events: 1
+  group: Gqcd
+  order: 5

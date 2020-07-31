@@ -3,14 +3,14 @@
 #   2) Each parameter point (Hct and Hut) have three different contributions for which you have to take into account the relative importance (cross section) when merging the TH1 to derive limit
 # ST + TTaT + TTT = 1 
 # TTaT == TT for Xsec
-# Hct TTT + TTaT: 45.77 pb and ST: 1.91 pb --> ratio ST/TT: 0.0417   
-# Hut TTT + TTaT: 45.77 pb and ST: 14.01 pb --> ratio ST/TT: 0.3061
+# Hct TTT + TTaT: 46.5 pb and ST: 1.9 pb --> ratio ST/(ST+TT): 0.0392562 // TT/(ST+TT): 0.960744 (0.480372 + 0.480372)
+# Hut TTT + TTaT: 46.5 pb and ST: 13.84 pb -->  ratio ST/(ST+TT): 0.229367 // TT/(ST+TT): 0.770633 (0.385317 + 0.385317)
 # NB: all the above Xswec depend on the coupling squared and are for an aritrary value of coupling = 1  
 
 'hist_STTH1L3BHct.root':
   type: signal
   pretty-name: 'STTH1L3BHct'
-  cross-section: 0.0417
+  cross-section: 0.04
   generated-events: 3934412
   line-color: '#006666'
   legend: 'STHct'
@@ -18,7 +18,7 @@
 #'hist_TTTH1L3BHct.root':
 #  type: signal
 #  pretty-name: 'TTTH1L3BaTLepHct'
-#  cross-section: 0.9583
+#  cross-section: 0.96
 #  generated-events: 2010844
 #  line-color: '#cccc00'
 #  legend: 'TTHut'
@@ -26,7 +26,7 @@
 'hist_STTH1L3BHut.root':
   type: signal
   pretty-name: 'STTH1L3BHut'
-  cross-section: 0.3061
+  cross-section: 0.23
   generated-events: 3934660
   line-color: '#666600'
   legend: 'STHut'
@@ -34,7 +34,7 @@
 'hist_TTTH1L3BHut.root':
   type: signal
   pretty-name: 'TTTH1L3BaTLepHut'
-  cross-section: 0.6939
+  cross-section: 0.77
   generated-events: 2010844
   line-color: '#cccc00'
   legend: 'TTHut'

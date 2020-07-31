@@ -295,7 +295,7 @@
   type: mc
   pretty-name: 'DYJets'
   cross-section: 6225.42
-  generated-events: 100114403
+  generated-events: 130939668
   fill-color: '#000099'
   legend: 'ZJets'
   group: GZJets
@@ -400,3 +400,83 @@
   group: GVV
   yields-group: '3Other'
   order: 22
+
+'hist_QCDMu15to20.root':
+  cross-section: 3819570.0
+  generated-events: 4576061
+
+'hist_QCDMu20to30.root':
+  cross-section: 2960198.4
+  generated-events: 30612338
+
+'hist_QCDMu30to50.root':
+  cross-section: 1652471.5
+  generated-events: 29884616
+
+'hist_QCDMu50to80.root':
+  cross-section: 437504.1
+  generated-events: 20268872
+
+'hist_QCDMu80to120.root':
+  cross-section: 106033.7
+  generated-events: 25039361
+
+'hist_QCDMu120to170.root':
+  cross-section: 25190.5
+  generated-events: 20682254
+
+'hist_QCDMu170to300.root':
+  cross-section: 8654.5
+  generated-events: 35978539
+
+'hist_QCDMu300to470.root':
+  cross-section: 797.4
+  generated-events: 28996145
+
+'hist_QCDMu470to600.root':
+  cross-section: 79.0
+  generated-events: 20003034
+
+'hist_QCDMu600to800.root':
+  cross-section: 25.1
+  generated-events: 16618977
+
+'hist_QCDMu800to1000.root':
+  cross-section: 4.7
+  generated-events: 16749914
+
+'hist_QCDMu1000toInf.root':
+  cross-section: 1.6
+  generated-events: 10719790
+
+'hist_QCDEM15to20.root':
+  cross-section: 2302200.0
+  generated-events: 14578212
+
+'hist_QCDEM20to30.root':
+  cross-section: 5352960.0
+  generated-events: 14255377
+
+'hist_QCDEM30to50.root':
+  cross-section: 9928000.0
+  generated-events: 15086084
+
+'hist_QCDEM50to80.root':
+  cross-section: 2890800.0
+  generated-events: 10798233
+
+'hist_QCDEM80to120.root':
+  cross-section: 350000.0
+  generated-events: 9648791
+
+'hist_QCDEM120to170.root':
+  cross-section: 62964.0
+  generated-events: 9964143
+
+'hist_QCDEM170to300.root':
+  cross-section: 18810.0
+  generated-events: 3712174
+
+'hist_QCDEM300toInf.root':
+  cross-section: 1350.0
+  generated-events: 2901355
