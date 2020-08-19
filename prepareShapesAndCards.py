@@ -124,7 +124,7 @@ for item in os.listdir(options.root_path):
         category = 'other'
     processes_mapping[category].append(item)
 
-print processes_mapping
+print "Input root files: ", processes_mapping
 
 def merge_histograms(process, histogram, destination):
     """
@@ -353,13 +353,13 @@ def prepareShapes(backgrounds, signal, discriminant, discriminantName):
     datacard = os.path.join(output_dir, output_prefix + '.dat')
     root_input = ROOT.TFile(os.path.join(output_dir, output_prefix + '_shapes.root'), 'recreate')
 
+    print "========================================================================================================"
+    print "Start writing datacard..."
     print "File:", file
     print "Systematics:", systematics
     print "Background: ", backgrounds
     print "Signal: ", signal
     print "Discriminant: ", discriminant
-    print "Datacard: ", datacard
-    print "Output: ", os.path.join(output_dir, output_prefix + '.dat')
     if options.matrix:
         # Collect data, signal, background, gen level informations
         listColGen  = []
@@ -405,8 +405,10 @@ def prepareShapes(backgrounds, signal, discriminant, discriminantName):
                 
                 if sigIdx >= -2: 
                     listColGen.append({'bin':ibin,'poi':strGen,'nevt':nevt})
-                    listRateParamSig.append(strSigRateParamTemplate % (strGen, signal+'_gen'+str(ibin), nevt, 2*nevt))
-                    listPoi.append(strPoiTemplate % (strGen, strGen, nevt, 2*nevt))
+                    #listRateParamSig.append(strSigRateParamTemplate % (strGen, signal+'_gen'+str(ibin), nevt, 2*nevt))
+                    listRateParamSig.append(strSigRateParamTemplate % (strGen, signal+'_gen'+str(ibin), 1.0, 10.0))
+                    #listPoi.append(strPoiTemplate % (strGen, strGen, nevt, 2*nevt))
+                    listPoi.append(strPoiTemplate % (strGen, strGen, 1.0, 10.0))
                 listColProc.append({'bin':disc[1],'proc':procName,'procIdx':sigIdx,'rate':TH1.Integral(),'syst':tmp})
                
                 sigIdx -= 1
@@ -446,23 +448,36 @@ def prepareShapes(backgrounds, signal, discriminant, discriminantName):
             ]
 
         for ibin in range(len(listColGen)):
-            print len(listRegFactor[options.regmode]), len(listColGen) - ibin
             if len(listRegFactor[options.regmode]) > len(listColGen) - ibin: 
                 break
             listRegFormula = []
             for idx, regFactor in enumerate(listRegFactor[options.regmode]):
                 binNum = ibin + idx
-                listRegFormula.append("(%0.1lf)*(%s-%lf)" % (regFactor, listColGen[binNum]['poi'], listColGen[binNum]['nevt']))
-            print listRegFormula
+                #listRegFormula.append("(%0.1lf)*(%s-%lf)" % (regFactor, listColGen[binNum]['poi'], listColGen[binNum]['nevt']))
+                listRegFormula.append("(%0.1lf)*(%s-1.0)*%lf" % (regFactor, listColGen[binNum]['poi'], listColGen[binNum]['nevt']))
             listRegularization.append(strRegularizationTemplate % (ibin, '+'.join(s for s in listRegFormula), 1000.0))
-
+       
+        print "Regularization Formula: ", listRegularization
+        
         listSyst = []
+        listTheory = []
+        listExp = []
+        
         listSyst.append('CMS_%s_lumi lnN ' % (options.dataYear) + (str(options.luminosityError) + ' ') * len(listColProc))
         for idx, value in enumerate(systematics):
+            if any(i == value for i in [CMSNamingConvention(s) for s in ['sw','tune','ps','pdf','hdamp']]):
+                listTheory.append(value)
+            else:
+                listExp.append(value)
             strSyst = value + ' shape'
             for item in listColProc:
                 strSyst += ' '+item['syst'][idx]
             listSyst.append(strSyst)
+        print "Theory: ", listTheory
+        print "Experiment: ", listExp
+        strTheory = 'theory group = '+' '.join(item for item in listTheory)
+        strExp    = 'syst group = '+' '.join(item for item in listExp)
+        strSysGroup = strTheory +'\n' + strExp
 
         strDataCardTemplate = """
 imax %(binnum)i
@@ -485,6 +500,7 @@ rate %(listNmc)s
 %(rateParamUnfold)s
 %(paramMC)s
 %(regularization)s
+%(sysGroup)s
         """
 
         dictIn = {}
@@ -502,13 +518,34 @@ rate %(listNmc)s
         dictIn['rateParamUnfold'] = '\n'.join(item for item in listRateParamSig)
         dictIn['paramMC'] = '\n'.join(item for item in listParamBkg)
         dictIn['regularization'] = '\n'.join(item for item in listRegularization)
+        dictIn['sysGroup'] = strSysGroup 
 
         strCardContent = strDataCardTemplate % dictIn
         with open(datacard, 'w') as fCard: fCard.write(strCardContent)
 
         pois = ' ' .join(item for item in listPoi)
         temp = ' -P '.join(d['poi'] for d in listColGen)
-        combineOptions = '-M MultiDimFit -P %s --saveNLL --saveSpecifiedNuis=all --cminFinalHesse 1' % temp
+        minDelta = 0.1
+        maxDelta = 1.0
+        points = 20
+        def deltaArray(minD, maxD, n):
+            return [round(float(minDelta)+float(maxD)/float(n)*float(i),3) for i in range(n)]
+        listDelta = deltaArray(minDelta,maxDelta,points)
+        def listToShellArray(inList):
+            return '('+' '.join(str(i) for i in listDelta)+')'
+        combineOptions = '-M MultiDimFit -P %s --saveNLL --saveSpecifiedNuis=all --cminFinalHesse 1 --saveFitResult --setParameters delta=$testDelta' % temp
+        strCombineTemplate = """
+arrayDelta=$(python ../../computeGCC.py 0 {minDelta} {maxDelta} {points}) 
+for testDelta in {tmp}
+do
+  combine %s -n RegTest {combineOptions}
+  python ../../computeGCC.py 1 multiDimFitRegTest.root gcc.root $testDelta
+done
+python ../../computeGCC.py 2 gcc.root
+bestDelta=$(../../computeGCC.py 3 gcc.root)
+        """.format(tmp = '${arrayDelta[0]}$',minDelta=minDelta,maxDelta=maxDelta,points=points, combineOptions=combineOptions)
+        combineOptions = '-M MultiDimFit -P %s --saveNLL --saveSpecifiedNuis=all --cminFinalHesse 1 --saveFitResult --setParameters delta=$bestDelta' % temp
+
         if 'dR' in discriminantName:
             histName = 'h_mindR_RecoAddbJetDeltaR_{0}_{1}'.format(channel, selection) 
         elif 'M' in discriminantName:
@@ -518,8 +555,8 @@ rate %(listNmc)s
             syst.exit(1)
 
         plottingCmd = """
-        python ../../makePostFitPlotsForPlotIt.py -d={discriminantName} -h={hist} -i=multidimfit_{name}_postfit.root -o=post_shapes_{name}_forPlotIt -y={year} -l={lumi} 
-        $CMSSW_BASE/src/UserCode/plotIt/plotIt -o post_spahes_{name}_forPlotIt ../../config_forPlotIt/postfit_plotIt_config_{discriminantName}.yml -y
+python ../../makePostFitPlotsForPlotIt.py -d={discriminantName} -h={hist} -i=multidimfit_{name}_postfit.root -o=post_shapes_{name}_forPlotIt -y={year} -l={lumi} 
+$CMSSW_BASE/src/UserCode/plotIt/plotIt -o post_spahes_{name}_forPlotIt ../../config_forPlotIt/postfit_plotIt_config_{discriminantName}.yml -y
         """.format(name=output_prefix, discriminantName=discriminantName, hist=histName, year=options.dataYear[-2:], lumi=options.luminosity)
     else:
         import CombineHarvester.CombineTools.ch as ch
@@ -542,37 +579,67 @@ rate %(listNmc)s
         cb.cp().signals().ExtractShapes(file, '$BIN/$PROCESS', '$BIN/$PROCESS__$SYSTEMATIC')
         cb.cp().WriteDatacard(datacard, root_input)
         
+        strCombineTemplate = "# doing nothing for QCD %s"
+        
         pois = ''
         strPoiTemplate = "--PO 'map=%s/%s:%s[%lf,%lf,%lf]'"
         for background in backgrounds:
             pois += strPoiTemplate % (discriminant, backgrounds, 'r_other', 1.0, 0.6, 1.4) + ' '
         pois += strPoiTemplate % (discriminant, signal, 'r_'+signal, 1.0, 0.0, 4.0)
         combineOptions = '-M FitDiagnostics --saveNormalizations --saveShapes --saveWithUncertainties --robustFit=1 --robustHesse 1 -v 1'
-        plotterCmd = """
-        python ../../convertPostfitShapesForPlotIt.py -i post_shapes_{name}.root
-        $CMSSW_BASE/src/UserCode/plotIt/plotIt -o post_spahes_{name}_forPlotIt ../../config_forPlotIt/postfit_plotIt_config_ttbb_{year}_{discriminantName}.yml -y
+        plottingCmd = """
+python ../../convertPostfitShapesForPlotIt.py -i post_shapes_{name}.root
+$CMSSW_BASE/src/UserCode/plotIt/plotIt -o post_spahes_{name}_forPlotIt ../../config_forPlotIt/postfit_plotIt_config_ttbb_{year}_{discriminantName}.yml -y
         """.format(name=output_prefix, year=options.year, discriminantname=discriminantName)
 
+    print "Datacard: ", datacard
+    print "Output: ", os.path.join(output_dir, output_prefix + '.dat')
     # Write bash script
+    ### Unfolding
     workspace_file = os.path.basename(os.path.join(output_dir, output_prefix + '_combine_workspace.root'))
     strScript = """
 text2workspace.py {datacard} -m {fake_mass} -o {workspace_root} -P HiggsAnalysis.CombinedLimit.PhysicsModel:multiSignalModel {pois}
+{regularization}
 combine {workspace_root} -n _{name}_postfit {combineOptions}
 {plottingCmd}
-    """.format(datacard=os.path.basename(datacard), workspace_root=workspace_file, name=output_prefix, fake_mass=172.5, year=options.dataYear, discriminantName=discriminantName, combineOptions=combineOptions, pois=pois)
+    """.format(datacard=os.path.basename(datacard), workspace_root=workspace_file, name=output_prefix, fake_mass=172.5, year=options.dataYear, discriminantName=discriminantName, regularization = strCombineTemplate % workspace_file, combineOptions=combineOptions, pois=pois, plottingCmd=plottingCmd)
     script_file = os.path.join(output_dir, output_prefix + '_run_postfit.sh')
     with open(script_file, 'w') as f:
         f.write(strScript)
+    st = os.stat(script_file)
+    os.chmod(script_file, st.st_mode | stat.S_IEXEC)
 
+    ### Impacts
     strScript = """
 combineTools.py -M Impacts -d {name}_combine_workspace.root -m {fake_mass} --doInitialFit --robustFit=1 --robustHesse 1
 combineTools.py -M Impacts -d {name}_combine_workspace.root -m {fake_mass} --robustFit=1 --robustHesse 1 --doFits --parallel 10
 combineTools.py -M Impacts -d {name}_combine_workspace.root -m {fake_mass} -o {name}_impacts.json
-{plotterCmd}
-    """.format(datacard=os.path.basename(datacard), workspace_root=workspace_file, name=output_prefix, fake_mass=172.5, plotterCmd=plotterCmd)
+{plottingCmd}
+    """.format(datacard=os.path.basename(datacard), workspace_root=workspace_file, name=output_prefix, fake_mass=172.5, plottingCmd=plottingCmd)
     script_file = os.path.join(output_dir, output_prefix + '_run_impacts.sh')
     with open(script_file, 'w') as f:
         f.write(strScript)
+    os.chmod(script_file, st.st_mode | stat.S_IEXEC)
+
+    #### Uncertainty breakdown
+    strScript = """
+#combine -M MultiDimFit --algo grid --points 100 {name}_combine_workspace.root -m 125 -n Nominal 
+#combine -M MultiDimFit --algo none {name}_combine_workspace.root -m 125 -n bestfit --saveWorkspace
+combine -M MultiDimFit --algo grid --points 50 -m 125 -n FreezeTheory higgsCombine.MultiDimFit.mH125.root --snapshotName MultiDimFit --freezeNuisanceGroups theory
+combine -M MultiDimFit --algo grid --points 50 -m 125 -n FreezeTheorySyst higgsCombine.MultiDimFit.mH125.root --snapshotName MultiDimFit --freezeNuisanceGroups theory syst 
+combine -M MultiDimFit --algo grid --points 50 -m 125 -n FreezeAll higgsCombine.MultiDimFit.mH125.root --snapshotName MultiDimFit --freezeNuisances all
+#TheoryUnc^2 = TotalUnc^2 - FreezeTheory^2
+#SystUnc^2 = FreezeTheoryUnc^2 - Freeze(Theory+Syst)Unc^2
+#StatUnc^2 = Freeze(Theory+Syst)Unc^2 - FreezeAll^2
+#plot1DScan.py option: others - FILE:LEGEND:COLOR
+plot1DScan.py higgsCombine.MultiDimFit.mH125.root --output OnlyTotalUnc
+plot1DScan.py higgsCombine.MultiDimFit.mH125.root --others 'higgsCombineTheory.MultiDimFit.mH125.root:Freeze th.:4' 'higgsCombineStat.MultiDimFit.mH125.root:Freeze all:2' --breakdown thoeory,syst,stat --output BreakdownAll 
+    """.format(name=output_prefix)
+    print listPoi
+    script_file = os.path.join(output_dir, output_prefix + '_run_breakdown.sh')
+    with open(script_file, 'w') as f:
+        f.write(strScript)
+    os.chmod(script_file, st.st_mode | stat.S_IEXEC)
 
 def main():
     """Main Function"""

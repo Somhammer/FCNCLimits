@@ -34,7 +34,7 @@ else
     else
       python prepareShapesAndCards.py -p hists/root${year}_post -dataYear 20${year} -l ${lumi[$year]} -le ${lumiErr[$year]} -xsecfile xsec_txt/files${year}.yml -o $datacardFolder -s S3 --sysToAvoid ${avoidSyst[$year]} 
     fi
-    python run_scripts.py $datacardFolder run_postfits
+    #python run_scripts.py $datacardFolder run_postfits
     #python run_all_closureChecks.py $datacardFolder run_closureChecks
     #python run_scripts.py $datacardFolder run_impacts
   fi

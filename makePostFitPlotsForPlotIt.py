@@ -7,11 +7,11 @@ cmssw_base = os.environ['CMSSW_BASE']
 
 parser = argparse.ArgumentParser(description='Set input root file')
 parser.add_argument('-d', '--discriminant', action='store', dest='disc', type=str, default='dR_All')
-parser.add_argument('-h', '--histname', action='store', dest-'hist', type=str, default='test')
+parser.add_argument('-h', '--histname', action='store', dest='hist', type=str, default='test')
 parser.add_argument('-i', '--input', action='store', dest='input', type=str, default='test')
 parser.add_argument('-o', '--output', action='store', dest='output', type=str, default='test')
 parser.add_argument('-y', '--year', action='store', dest='year', type=str, defalut='16')
-parser.add_argument('-l', '--luminosity', action='store', dest='lumi', type=int default=35922)
+parser.add_argument('-l', '--luminosity', action='store', dest='lumi', type=int, default=35922)
 options = parser.parse_args()
 
 if not os.path.exists(options.output):
