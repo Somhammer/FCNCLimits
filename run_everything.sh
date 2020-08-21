@@ -17,12 +17,12 @@ else
     systematics=("__qcdisoup" "__qcdisodown")
     for val in ${channels[@]}; do
       python prepareShapesAndCards.py -p hists/root${year}_qcd -dataYear 20${year} -l ${lumi[$year]} -le ${lumiErr[$year]} -xsecfile xsec_txt/files${year}_qcd.yml -o ${datacardFolder}_${val} -s S2 -c $val -q $runQCD -qi ${qcdFile}.root
-      python run_all_postfits.py ${datacardFolder}_${val}
+      python run_scripts.py ${datacardFolder}_${val} run_postfits
       #python run_all_closureChecks.py ${datacardFolder}_${val}
       #python run_all_impacts.py ${datacardFolder}_${val}
       for syst in ${systematics[@]}; do
         python prepareShapesAndCards.py -p hists/root${year}_qcd -dataYear 20${year} -l ${lumi[$year]} -le ${lumiErr[$year]} -xsecfile xsec_txt/files${year}_qcd.yml -o ${datacardFolder}_${val}${syst} -s S2 -c $val -q $runQCD -qi ${qcdFile}${syst}.root
-        python run_all_postfits.py ${datacardFolder}_${val}${syst}
+        python run_scripts.py ${datacardFolder}_${val}${syst} run_postfits
         #python run_all_closureChecks.py ${datacardFolder}_${val}${syst}
         #python run_all_impacts.py ${datacardFolder}_${val}${syst}
       done
@@ -34,9 +34,10 @@ else
     else
       python prepareShapesAndCards.py -p hists/root${year}_post -dataYear 20${year} -l ${lumi[$year]} -le ${lumiErr[$year]} -xsecfile xsec_txt/files${year}.yml -o $datacardFolder -s S3 --sysToAvoid ${avoidSyst[$year]} 
     fi
-    #python run_scripts.py $datacardFolder run_postfits
+    python run_scripts.py $datacardFolder run_postfits
     #python run_all_closureChecks.py $datacardFolder run_closureChecks
-    #python run_scripts.py $datacardFolder run_impacts
+    python run_scripts.py $datacardFolder run_impacts
+    python run_scripts.py $datacardFolder run_breakdown
   fi
 fi
 

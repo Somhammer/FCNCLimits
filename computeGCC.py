@@ -1,10 +1,9 @@
-import sys
-import math
-import array
+import os, sys
+import math, array
+import numpy as np
 
 import ROOT
 
-#print sys.argv
 if int(sys.argv[1]) == 1:
     minD = float(sys.argv[2])
     maxD = float(sys.argv[3])
@@ -12,7 +11,8 @@ if int(sys.argv[1]) == 1:
     listDelta = [round(minD+(maxD-minD)/float(n)*float(i),3) for i in range(n)]
     print ' '.join(str(i) for i in listDelta)
 elif int(sys.argv[1]) == 2:
-    fInput = ROOT.TFile.Open(str(sys.argv[2]))
+    print os.getcwd()
+    fInput = ROOT.TFile.Open(str(os.getcwd())+'/'+str(sys.argv[2]))
     fOutput = ROOT.TFile.Open(str(sys.argv[3]),'update')
     delta = float(sys.argv[4])
 
@@ -61,18 +61,16 @@ elif int(sys.argv[1]) == 2:
     #fOutput.Write()
     fOutput.Close()
     fInput.Close()
-
-elif int(sys.argv[1]) == 3 || int(sys.argv[1]) == 4:
+elif int(sys.argv[1]) == 3:
     # Draw GCC vs Delta (3) or return best delta (4)i
-    chain = TChain("gcc")
-    chain.Add(str(sys.argv[3]))
+    chain = ROOT.TChain("gcc")
+    chain.Add(str(os.getcwd())+'/'+str(sys.argv[2]))
     nBr = chain.GetNbranches()
     listBr = []
     tmp = chain.GetListOfBranches()
     for i in range(nBr):
         listBr.append(tmp[i].GetName())
     
-#    globalCorrelationCoefficient = Sigma(rho_i)/n
     listDelta = []
     listGCC = []
     for i in xrange(chain.GetEntries()):
@@ -86,9 +84,17 @@ elif int(sys.argv[1]) == 3 || int(sys.argv[1]) == 4:
         gcc = sum(listCorr)/(nBr - 1.)
         listDelta.append(delta)
         listGCC.append(gcc)
-    if int(sys.argv[1]) == 3:
-### make hist
-    else:
-        print min(listGCC)
+    
+    c = ROOT.TCanvas('','',800,800)
+    arrDelta = np.array(listDelta)
+    arrGCC = np.array(listGCC)
+    TGr = ROOT.TGraph(len(listDelta),arrDelta,arrGCC)
+    TGr.GetXaxis().SetTitle("#delta")
+    TGr.GetYaxis().SetTitle("Global correlation coefficient")
+    TGr.SetMarkerStyle(20)
+    TGr.Draw('AP')
+    c.Print('GCC.pdf','pdf')
+    idx = listGCC.index(min(listGCC))
+    print listDelta[idx]
 else:
-    print "Please set the first argument as an positive integer less than 5"
+    print "Please set the first argument as an positive integer less than 3"

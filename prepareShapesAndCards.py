@@ -535,15 +535,15 @@ rate %(listNmc)s
             return '('+' '.join(str(i) for i in listDelta)+')'
         combineOptions = '-M MultiDimFit -P %s --saveNLL --saveSpecifiedNuis=all --cminFinalHesse 1 --saveFitResult --setParameters delta=$testDelta' % temp
         strCombineTemplate = """
-arrayDelta=$(python ../../computeGCC.py 0 {minDelta} {maxDelta} {points}) 
+arrayDelta=$(python ../../computeGCC.py 1 {minDelta} {maxDelta} {points}) 
 for testDelta in {tmp}
 do
   combine %s -n RegTest {combineOptions}
-  python ../../computeGCC.py 1 multiDimFitRegTest.root gcc.root $testDelta
+  python ../../computeGCC.py 2 multiDimFitRegTest.root gcc.root $testDelta
 done
-python ../../computeGCC.py 2 gcc.root
 bestDelta=$(../../computeGCC.py 3 gcc.root)
-        """.format(tmp = '${arrayDelta[0]}$',minDelta=minDelta,maxDelta=maxDelta,points=points, combineOptions=combineOptions)
+echo "Best delta: " $bestDelta
+        """.format(tmp = '${arrayDelta[0]}',minDelta=minDelta,maxDelta=maxDelta,points=points, combineOptions=combineOptions)
         combineOptions = '-M MultiDimFit -P %s --saveNLL --saveSpecifiedNuis=all --cminFinalHesse 1 --saveFitResult --setParameters delta=$bestDelta' % temp
 
         if 'dR' in discriminantName:
