@@ -105,27 +105,29 @@ def write_datacard_for_unfold(self, output, discriminant, regularization):
     listRegularization = []
     tmp = set(pois)
     pois = list(tmp)
+    pois.sort()
 
     # Regularization
     ### Singular vector decomposition
     if regularization['mode'].lower() == "svd":
         strRegTemplate = "constr{idx} constr {binLo}-2*{binMed}+{binHi} {delta}"
         strRegEdgeTemplate = "constr{idx} constr {binLo}-{binHi} {delta}"
+        strDelta = "delta["+str(regularization['delta'])+"]"
 
         listRegularization.append(strRegEdgeTemplate.format(
-            idx = 0, delta = regularization['delta'],
+            idx = 0, delta = strDelta,
             binLo = pois[0],
             binHi = pois[1]))
 
         for ibin in range(1, len(pois)-1):
             listRegularization.append(strRegTemplate.format(
-                idx = ibin, delta = regularization['delta'],
+                idx = ibin, delta = strDelta,
                 binLo = pois[ibin-1],
                 binMed = pois[ibin],
                 binHi = pois[ibin+1]))
 
         listRegularization.append(strRegEdgeTemplate.format(
-            idx = len(pois)-1, delta = regularization['delta'],
+            idx = len(pois)-1, delta = strDelta,
             binLo = pois[-2],
             binHi = pois[-1]))
 

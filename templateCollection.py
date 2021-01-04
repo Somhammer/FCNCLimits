@@ -37,44 +37,50 @@ arrayDelta=$(python $basePath/compute{minimize}.py 1 {minDelta} {maxDelta} {poin
 for testDelta in ${{arrayDelta[@]}} 
 do
   {combine} --setParameters delta=$testDelta
-  python compute{minimize}.py 2 multidimfit{outname}.root {minimize}.root $testDelta
+  python $basePath/compute{minimize}.py 2 multidimfit{outname}.root {minimize}.root $testDelta
 done
-bestDelta=$(python $basePath/computeGCC.py 3 {minimize}.root)
+bestDelta=$(python $basePath/compute{minimize}.py 3 {minimize}.root)
 echo "Best delta: " $bestDelta
 """
 #format(minDelta=minDelta,maxDelta=maxDelta,points=points, combineOptions=combineOptions)
 
 strToyTestTemplate = """\
 {combine} -t -1
-python $CMSSW_BASE/src/HiggsAnalysis/CombinedLimit/test/diffNuisances.py -a fitDiagnostics_{name}_bkgPlusSig.root -g fitDiagnostics_{name}_bkgPlusSig_plots.root > fitDiagnostics_{name}_bkgPlusSig.log
-python $CMSSW_BASE/src/UserCode/ttbbDiffXsec/printPulls.py fitDiagnostics_{name}_bkgPlusSig_plots.root
+
+arrayPOIs={pois}
+for poi in ${{arrayPOIs[@]}}
+do
+  python $CMSSW_BASE/src/HiggsAnalysis/CombinedLimit/test/diffNuisances.py -a fitDiagnostics_{name}_bkgPlusSig.root -g fitDiagnostics_{name}_bkgPlusSig_plots_$poi\.root -p $poi > fitDiagnostics_{name}_bkgPlusSig_$poi\.log
+  python $CMSSW_BASE/src/UserCode/ttbbDiffXsec/printPulls.py fitDiagnostics_{name}_bkgPlusSig_plots_$poi\.root
+done
 #print NLL for check
 #combineTool.py -M FastScan -w {name}_combine_workspace.root:w -o {name}_nll
 """
 
 strImpactTemplate = """\
-combineTool.py -M Impacts -d {name}_combine_workspace.root -m 125 --doInitialFit --robustFit=1 --robustHesse 1 -t -1
-combineTool.py -M Impacts -d {name}_combine_workspace.root -m 125 --robustFit=1 --robustHesse 1 --doFits -t -1 --parallel 32
-combineTool.py -M Impacts -d {name}_combine_workspace.root -m 125 -o {name}_expected_impacts.json -t -1
-arrayPOIs = {pois}
+arrayPOIs={pois}
+
+combineTool.py -M Impacts -d {name}_combine_workspace.root -m 125 --doInitialFit --robustFit=1 --robustHesse 1 -t -1 {reg}
+combineTool.py -M Impacts -d {name}_combine_workspace.root -m 125 --robustFit=1 --robustHesse 1 --doFits -t -1 --parallel 32 {reg}
+combineTool.py -M Impacts -d {name}_combine_workspace.root -m 125 -o {name}_expected_impacts.json -t -1 {reg}
 for poi in ${{arrayPOIs[@]}}
 do
-  plotImpacts.py -i {name}_expected_impacts.json -o {name}_impacts_$poi --po $poi --per-page 40
+  plotImpacts.py -i {name}_expected_impacts.json -o {name}_expected_impacts_$poi --po $poi --per-page 40
 done
 
-combineTools.py -M Impacts -d {name}_combine_workspace.root -m 125 --doInitialFit --robustFit=1 --robustHesse 1
-combineTools.py -M Impacts -d {name}_combine_workspace.root -m 125 --robustFit=1 --robustHesse 1 --doFits --parallel 32
-combineTools.py -M Impacts -d {name}_combine_workspace.root -m 125 -o {name}_impacts.json
-arrayPOIs = {pois}
+combineTools.py -M Impacts -d {name}_combine_workspace.root -m 125 --doInitialFit --robustFit=1 --robustHesse 1 {reg}
+combineTools.py -M Impacts -d {name}_combine_workspace.root -m 125 --robustFit=1 --robustHesse 1 --doFits --parallel 32 {reg}
+combineTools.py -M Impacts -d {name}_combine_workspace.root -m 125 -o {name}_impacts.json {reg}
 for poi in ${{arrayPOIs[@]}} 
 do
   plotImpacts.py -i {name}_impacts.json -o {name}_impacts_$poi --po $poi --per-page 40
 done
 """
 
-strPlottingBestFit = """\
-python $CMSSW_BASE/src/UserCode/makePostFitPlotsForPlotIt.py -d={discriminantName} -h={hist} -i=multidimfit_{name}_postfit.root -o=post_shapes_{name}_forPlotIt -y={year} -l={lumi} 
-$CMSSW_BASE/src/UserCode/plotIt/plotIt -o post_spahes_{name}_forPlotIt $CMSSW_BASE/src/UserCode/configs/postfit_plotIt_config_{discriminantName}.yml -y
+strPlotting = """\
+PostFitShapesFromWorkspace -w {name}_combine_workspace.root -d {datacard} -o postfit_shapes_{name}.root -f fitDiagnostics_{name}_postfit.root:fit_s --postfit --sampling
+python ../../convertPostfitShapesForPlotIt.py -i postfit_shapes_{name}.root
+$CMSSW_BASE/src/UserCode/plotIt/plotIt -o postfit_shapes_{name}_forPlotIt $CMSSW_BASE/src/UserCode/configs/postfit_plotIt_config_{name}.yml -y
 """
 #format(name=output_prefix, discriminantName=discriminantName, hist=histName, year=options.dataYear[-2:], lumi=options.luminosity)
 

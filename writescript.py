@@ -22,7 +22,6 @@ def write_script(self, datacard, output, discriminant, config, pois=[]):
         output_prefix = '%s_Discriminant_%s' % (signal, discriminant)
         workspace_file = output_prefix+'_combine_workspace.root'
  
-        #strPoiTemplate = "--PO 'map={poi}:{poi}[{init},{min},{max}]'"
         strPoiTemplate = "--PO map='.*/{signal}_gen{bin}_*:{poi}[{init},{min},{max}]'"
         tmp = []
         for poi in pois:
@@ -40,16 +39,9 @@ def write_script(self, datacard, output, discriminant, config, pois=[]):
             f.write(strWorkspace)
         st = os.stat(script_file)
         os.chmod(script_file, st.st_mode | stat.S_IEXEC)
-    
-        #commandOptions = ' '.join(tmp for tmp in config['base'])
-        #if poiforCombine is not None: commandOptions += ' '+poiforCombine
-        #if config['statOnly']: temp = 'statOnly'
-        #else: temp = 'blinded'
-        #commandOptions += ' ' + ' '.join(tmp for tmp in config['bestfit'][temp]['commands']) 
       
         ### Scan regularization parameter
         if config['regularization']['mode'] is not None:
-#combine ttbb_Discriminant_deltaR_combine_workspace.root -n ScanReg -M MultiDimFit -m 125 --cminDefaultMinimizerTolerance 1e-2 --cminDefaultMinimizerStrategy 0 -t -1 --freezeParameters allConstrainedNuisances --setParameters delta=$testDelta --saveFitResult
             options = ' '.join(opt for opt in config['base']) + ' '
             options += ' '.join(opt for opt in config['regularization']['options']) + ' '
             options += ' '.join(opt for opt in config['regularization'][config['regularization']['minimize']])
@@ -71,16 +63,18 @@ def write_script(self, datacard, output, discriminant, config, pois=[]):
                 m = config['regularization']['minimize'])
 
         ### Toy test
+        strPois = '('+ ' '.join(item for item in pois) + ')'
         options = ' '.join(opt for opt in config['base']) + ' '
         options += ' '.join(opt for opt in config['bestfit']['options']) + ' '
         strCombine = tc.strCombine.format(
             workspace = workspace_file, outname = "_"+output_prefix+"_bkgPlusSig", options = options)
         if config['regularization']['mode'] is not None:
             strScript = delta
+            strCombine = strCombine.replace("--skipBOnlyFit","")
             strCombine += " --setParameters delta=$bestDelta"
         else:
             strScript = ""
-        strScript += "\n" + tc.strToyTestTemplate.format(combine = strCombine, name = output_prefix)
+        strScript += "\n" + tc.strToyTestTemplate.format(combine = strCombine, name = output_prefix, pois = strPois)
         script_file = os.path.join(output, signal, output_prefix + '_run_toytest.sh')
         with open(script_file, 'w') as f:
             f.write(strScript)
@@ -88,8 +82,13 @@ def write_script(self, datacard, output, discriminant, config, pois=[]):
         os.chmod(script_file, st.st_mode | stat.S_IEXEC)
  
         ### Impacts
-        strPois = '('+ ' '.join(item for item in pois) + ')'
-        strScript = tc.strImpactTemplate.format(name = output_prefix, pois = strPois)
+        if config['regularization']['mode'] is not None:
+            strScript = delta
+            strReg = "--setParameters delta=$bestDelta"
+        else:
+            strScript = ""
+            strReg = ""
+        strScript += '\n' + tc.strImpactTemplate.format(name = output_prefix, pois = strPois, reg = strReg)
         script_file = os.path.join(output, signal, output_prefix + '_run_impacts.sh')
         with open(script_file, 'w') as f:
             f.write(strScript)
@@ -99,13 +98,15 @@ def write_script(self, datacard, output, discriminant, config, pois=[]):
 
         ### Best fit
         strCombine = tc.strCombine.format(
-            workspace = workspace_file, outname = output_prefix, options = options)
+            workspace = workspace_file, outname = output_prefix+'_postfit', options = options)
         if config['regularization']['mode'] is not None:
             strScript = delta
             strCombine += " --setParameters delta=$bestDelta"
         else:
             strScript = ""
         strScript += "\n" + strCombine
+        strScript += "\n" + tc.strPlotting.format(
+            name = output_prefix, datacard = os.path.basename(datacard))
         script_file = os.path.join(output, signal, output_prefix + '_run_postfit.sh')
         with open(script_file, 'w') as f:
             f.write(strScript)
